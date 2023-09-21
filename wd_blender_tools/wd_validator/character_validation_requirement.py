@@ -222,9 +222,10 @@ class ValidatorRequirementTextureFilesExist(Validator):
         texture_names_udim = [re.sub(r'_(\d{4})_', '_<UDIM>_', texture_name) for texture_name in texture_names]
         ignore_images = ['Render Result', 'Viewer Node']
 
-        for node in bpy.context.scene.world.node_tree.nodes:
-            if node.type == 'TEX_ENVIRONMENT' and node.image:
-                ignore_images.append(node.image.name)
+        if bpy.context.scene.world:
+            for node in bpy.context.scene.world.node_tree.nodes:
+                if node.type == 'TEX_ENVIRONMENT' and node.image:
+                    ignore_images.append(node.image.name)
 
         for image in bpy.data.images:
             texture_name = os.path.basename(image.filepath.replace('\\', '//'))
