@@ -219,7 +219,7 @@ class ValidatorRequirementTextureFilesExist(Validator):
             ]
 
         texture_names = [os.path.basename(texture_path) for texture_path in texture_paths]
-        texture_names_udim = [re.sub(r'_(\d{4})_', '_<UDIM>_', texture_name) for texture_name in texture_names]
+        texture_names_udim = [re.sub(r'\d{4}', '<UDIM>', texture_name) for texture_name in texture_names]
         ignore_images = ['Render Result', 'Viewer Node']
 
         if bpy.context.scene.world:
