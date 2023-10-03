@@ -13,6 +13,7 @@ from typing import List
 from typing import Optional
 from typing import Union
 from glob import glob
+import os
 import re
 from .addon_static import (
     all_supported_bone_names,
@@ -347,7 +348,7 @@ def cleanup_character(self, context):  # pylint: disable=unused-argument
         This function has the side effect of purging orphan data blocks and saving the file.
     """
     file_path = Path(bpy.data.filepath)
-    shutil.copyfile(file_path, file_path.parent/(file_path.stem+'_backup.blend'))
+    shutil.copyfile(file_path, file_path.parent / (file_path.stem + '_backup.blend'))
 
     if bpy.context.view_layer.objects.active:
         bpy.ops.object.mode_set(mode='OBJECT')
@@ -381,11 +382,12 @@ def cleanup_character(self, context):  # pylint: disable=unused-argument
     save_file()
 
 
-class ExportData():
+class ExportData:
     '''Export and prepare Blender data for upload to Wonder Studio.'''
+
     def __init__(self, metadata) -> None:
         file_path = Path(bpy.data.filepath)
-        output_path = file_path.parent/EXPORT_FOLDER_NAME
+        output_path = file_path.parent / EXPORT_FOLDER_NAME
 
         # Make paths absolut to avoid issues when copying files
         bpy.ops.file.make_paths_absolute()
@@ -399,26 +401,26 @@ class ExportData():
         output_path.mkdir(parents=True, exist_ok=True)
 
         # Copy the character file
-        shutil.copyfile(file_path, output_path/(file_path.stem+'_output.blend'))
+        shutil.copyfile(file_path, output_path / (file_path.stem + '_output.blend'))
 
         # Copy textures
         self.copy_texture_files(output_path)
 
         # Save Metadata
-        with open(output_path/'metadata.json', 'w', encoding="utf-8") as outfile:
+        with open(output_path / 'metadata.json', 'w', encoding="utf-8") as outfile:
             json.dump(metadata, outfile, indent=4)
 
         # Set read, execture permissions to owner and group
         # self.change_permissions_recursive(target_path=output_path, mode=0o555)
 
-    def copy_texture_files(self, output_path:Path):
+    def copy_texture_files(self, output_path: Path):
         '''Copy all texture files in use to the output location.
         Args:
             output_path: Path
                 Output location for all character files.
         '''
         # Create textures folder
-        output_textures_path = output_path/'textures'
+        output_textures_path = output_path / 'textures'
         output_textures_path.mkdir(parents=True, exist_ok=True)
 
         # Ignore images
@@ -446,8 +448,18 @@ class ExportData():
                 texture_paths.extend(new_paths)
 
         # Copy texture files
+        missing_textures = []
         for texture_path in texture_paths:
-            shutil.copyfile(texture_path, output_textures_path/texture_path.name)
+            if not texture_path or not os.path.isfile(texture_path):
+                missing_textures.append(texture_path)
+                continue
+            shutil.copyfile(texture_path, output_textures_path / texture_path.name)
+
+        # report missing textures.
+        if missing_textures:
+            msg = 'Missing files! The following files can not be located:\n\t'
+            msg += '\n\t'.join([str(tx) for tx in missing_textures])
+            raise FileNotFoundError(msg)
 
     @classmethod
     def get_flat_image_path(cls, image) -> List[Path]:
@@ -475,7 +487,7 @@ class ExportData():
         image_path = Path(bpy.path.abspath(image.filepath)).parent
         udim_texture_name = Path(image.filepath).name
         glob_search_pattern = udim_texture_name.replace('<UDIM>', '[0-9][0-9][0-9][0-9]')
-        extracted_paths = glob(str(image_path/glob_search_pattern))
+        extracted_paths = glob(str(image_path / glob_search_pattern))
         extracted_paths = [Path(extracted_path) for extracted_path in extracted_paths]
         return extracted_paths
 
@@ -503,7 +515,7 @@ class ExportData():
         counter = 1
         while counter <= max_images:
             image_name = f'{prefix}{digits:0{width}}{suffix}'
-            image_path = images_path/image_name
+            image_path = images_path / image_name
             if not image_path.is_file():
                 break
             extracted_paths.append(image_path)
