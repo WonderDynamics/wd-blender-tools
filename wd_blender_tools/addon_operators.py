@@ -6,6 +6,7 @@
 """Module that holds all the blender operators used in the addon."""
 
 import bpy
+from os import path
 
 from .addon_helper import (
     auto_assign_bone_names,
@@ -20,6 +21,7 @@ from .addon_helper import (
 )
 from .addon_static import (
     all_supported_bone_names,
+    EXPORT_FOLDER_NAME,
 )
 from .wd_validator import text_static
 
@@ -353,6 +355,7 @@ class ValidateCharacter(bpy.types.Operator):
             return False
         return True
 
+
     def pre_check_pose_armature_hips_bone(self, target_arm_bones: dict) -> bool:
         '''Check if the Hips bone is assigned.
         Args:
@@ -365,6 +368,7 @@ class ValidateCharacter(bpy.types.Operator):
             self.report({'ERROR'}, text_static.VALIDATE_NO_HIPS)
             return False
         return True
+
 
     def pre_check_pose_armature_duplicate_bones(self, target_arm_bones: dict) -> bool:
         '''Check if the bone is assigned more than once.
@@ -379,6 +383,7 @@ class ValidateCharacter(bpy.types.Operator):
             self.report({'ERROR'}, f'{text_static.VALIDATE_DUPLICATE_BONES} {", ".join(duplicate_bones)}')
             return False
         return True
+
 
     def pre_check_face_mesh(self, target_mesh) -> bool:
         '''If the face object is assigned check if it is of right type.
@@ -396,6 +401,7 @@ class ValidateCharacter(bpy.types.Operator):
             return False
         return True
 
+
     def pre_check_face_mesh_blendshapes(self, target_mesh) -> bool:
         '''If the face object is assigned check if it has any eligible blendshapes.
         Args:
@@ -412,6 +418,7 @@ class ValidateCharacter(bpy.types.Operator):
             return False
         return True
 
+
     def pre_check_eye_bones(self, target_arm_bones: dict, eye_bones_dict: dict) -> bool:
         '''Check if bones are assigned as body and eye bones.
         Args:
@@ -422,7 +429,9 @@ class ValidateCharacter(bpy.types.Operator):
         Returns:
             bool
         '''
-        conflict_eye_bones = check_eye_bones(target_arm_bones, eye_bones_dict)
+        conflict_eye_bones = check_eye_bones(
+            target_arm_bones, eye_bones_dict
+        )
         if conflict_eye_bones:
             self.report(
                 {'ERROR'},
@@ -430,6 +439,7 @@ class ValidateCharacter(bpy.types.Operator):
             )
             return False
         return True
+
 
     def execute(self, context):
         """Executes the full validation process, extract data, and saves the metadata.json file.
@@ -449,18 +459,12 @@ class ValidateCharacter(bpy.types.Operator):
         write_bone_names(context)
 
         # Pre-Checks
-        if not self.pre_check_pose_armature(target_arm):
-            return {'CANCELLED'}
-        if not self.pre_check_pose_armature_hips_bone(target_arm_bones):
-            return {'CANCELLED'}
-        if not self.pre_check_pose_armature_duplicate_bones(target_arm_bones):
-            return {'CANCELLED'}
-        if not self.pre_check_face_mesh(target_mesh):
-            return {'CANCELLED'}
-        if not self.pre_check_face_mesh_blendshapes(target_mesh):
-            return {'CANCELLED'}
-        if not self.pre_check_eye_bones(target_arm_bones, eye_bones_dict):
-            return {'CANCELLED'}
+        if not self.pre_check_pose_armature(target_arm): return {'CANCELLED'}
+        if not self.pre_check_pose_armature_hips_bone(target_arm_bones): return {'CANCELLED'}
+        if not self.pre_check_pose_armature_duplicate_bones(target_arm_bones): return {'CANCELLED'}
+        if not self.pre_check_face_mesh(target_mesh): return {'CANCELLED'}
+        if not self.pre_check_face_mesh_blendshapes(target_mesh): return {'CANCELLED'}
+        if not self.pre_check_eye_bones(target_arm_bones, eye_bones_dict): return {'CANCELLED'}
 
         # Pre Validation Data-Dump
         write_shapekey_names(validator_properties.target_mesh, validator_properties.metadata)
@@ -514,6 +518,11 @@ class ValidateCharacter(bpy.types.Operator):
 
         try:
             ExportData(validator_properties.metadata)
+            output_path = path.join(path.dirname(bpy.data.filepath), EXPORT_FOLDER_NAME)
+            self.report(
+                {'INFO'},
+                f'{text_static.VALIDATION_EXPORT_SUCCEEDED} {output_path}',
+            )
 
         except FileNotFoundError as exception:
             print(f'Error exporting data to disk: {exception}')

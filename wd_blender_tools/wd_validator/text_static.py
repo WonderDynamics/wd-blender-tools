@@ -7,16 +7,18 @@
 
 from ..addon_static import (
     all_supported_bone_names,
+    EXPORT_FOLDER_NAME,
 )
 
 supported_naming_conventions = [bn_n.split('_')[0].replace('-', ' ') for bn_n in all_supported_bone_names]
 TEXT_SEPARATOR = '\n'
 
 # Panels messages
-INTRO_STR = '''Validate your characters for the Wonder Studio platform.
-Generate the metadata.json file after the successful and submit it with your character.
+INTRO_STR = f'''Validate your characters for the Wonder Studio platform.
+Generate the metadata.json file after the successful validation and submit it with your character.
+Auto-map bones if your character uses one of the supported bone naming conventions.
 Easily cleanup the scene and your character with a built-in automatic cleanup function.
-Auto-map bones if your character uses one of the supported bone naming conventions.'''
+After a successful Validation step, the {EXPORT_FOLDER_NAME} folder will be created containing all character files and the generated metadata.json file.'''
 INTRO_STR_EXTENDED = (
     '''This addon will help you validate that your character '''
     '''is compatible with the Wonder Studio platform.
@@ -66,13 +68,15 @@ You can register multiple eye bones.
 Alternatively, eye bones can be linked to eye control blendshapes manually and this step can be skipped.'''
 )
 
-VALIDATE_STR = '''[Mandatory] Validation process will take place in 3 simple steps:
+VALIDATE_STR = f'''[Mandatory] Validation process will take place in 3 simple steps:
 Cleanup > Validation > Warning.
-After the Validation step passes successfully metadata.json file will be generated.'''
-VALIDATE_EXPAND_STR = '''Cleanup is a pre-validation step.
+After the Validation step passes successfully, the {EXPORT_FOLDER_NAME} folder will be created.
+This folder will contain all character files as well as the generated metadata.json file.'''
+VALIDATE_EXPAND_STR = f'''Cleanup is a pre-validation step.
 You can resolve cleanup messages by clicking the Cleanup Character button that will appear.
 The Validation step will check for all conditions that can result in a failed upload.
-If this step passes, a metadata.json will be generated and you will be able to upload your character.
+If this step passes, a metadata.json will be generated inside
+the {EXPORT_FOLDER_NAME} folder and you will be able to upload your character.
 The Warning step will point out issues with your character that can lead to suboptimal performance. 
 It is recommended to resolve warning messages but it is not mandatory.'''
 
@@ -117,6 +121,8 @@ VALIDATION_PASSED_WARNINGS_STATUS = 'STATUS: Passed with Warnings.'
 
 VALIDATION_PASSED = 'Validation Passed.'
 VALIDATION_PASSED_STATUS = 'STATUS: Passed.'
+
+VALIDATION_EXPORT_SUCCEEDED = 'Files exported successfully! Character files and metadata.json saved at:'
 
 VALIDATION_EXPORT_FAILED = 'Export failed! Data could not be saved! Please make sure that you have write permissions in the folder you are working in.'
 
