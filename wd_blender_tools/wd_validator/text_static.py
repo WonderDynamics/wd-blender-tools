@@ -62,7 +62,7 @@ EYE_SELECTION_EXPAND_STR = (
     '''Characters gaze can be driven by facial performance only '''
     '''if eye bones are connected to blendshapes.
 Eye control blendshapes can drive your eye bones based on the angles and local axis that you define.
-You will need to have the following blendshapes: eyeL, eyeR, EyeUp, EyeDn.
+You will need to have the following blendshapes: eyeL, eyeR, eyeUp, eyeDn.
 Eye bone is registered by filling out the information and clicking Add Eye Bone button.
 You can register multiple eye bones.
 Alternatively, eye bones can be linked to eye control blendshapes manually and this step can be skipped.'''
