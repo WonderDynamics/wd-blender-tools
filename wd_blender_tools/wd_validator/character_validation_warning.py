@@ -187,7 +187,7 @@ class ValidatorWarningMissingBlendshapes(Validator):
     def __init__(self, metadata: dict) -> None:
         super().__init__()
         self.message = (
-            'Face blendshapes missing! Missing blendshapes may negatively impact facial animation'
+            'Some face blendshapes missing! Missing blendshapes may negatively impact facial animation'
             ' quality. Please make sure missing blendshapes are left out intentionally.'
         )
         self.key = 'missing_blendshapes_check'
