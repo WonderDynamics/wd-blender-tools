@@ -483,9 +483,9 @@ autoRigPro_bone_names = [
 all_supported_bone_names = {
     'Wonder-Studio,-Mixamo,-Human-IK_bone_names': standard_bone_names,
     'Quick-Rig_bone_names': quickRig_bone_names,
-    'Unreal-Engine_bone_names': unrealEngine_bone_names,
     'Character-Creator-4_bone_names': characterCreator4_bone_names,
     'Daz-3D_bone_names': daz3d_bone_names,
+    'Unreal-Engine_bone_names': unrealEngine_bone_names,
     'BlenRig_bone_names': blenRig_bone_names,
     'Rigify_bone_names': rigify_bone_names,
     'Auto-Rig-Pro_bone_names': autoRigPro_bone_names,
