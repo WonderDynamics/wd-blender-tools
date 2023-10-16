@@ -221,17 +221,23 @@ class ValidatorRequirementTextureFilesExist(Validator):
         texture_names = [os.path.basename(texture_path) for texture_path in texture_paths]
         texture_names_udim = [re.sub(r'\d{4}', '<UDIM>', texture_name) for texture_name in texture_names]
         ignore_images = ['Render Result', 'Viewer Node']
+        supported_image_types = ['IMAGE', 'MULTILAYER']
 
-        if bpy.context.scene.world:
+        if bpy.context.scene.world and bpy.context.scene.world.node_tree:
             for node in bpy.context.scene.world.node_tree.nodes:
                 if node.type == 'TEX_ENVIRONMENT' and node.image:
                     ignore_images.append(node.image.name)
 
         for image in bpy.data.images:
-            texture_name = os.path.basename(image.filepath.replace('\\', '//'))
-
-            if not image.users or image.packed_file or image.name in ignore_images:
+            if (
+                not image.users
+                or image.packed_file
+                or image.type not in supported_image_types
+                or image.name in ignore_images
+            ):
                 continue
+
+            texture_name = os.path.basename(image.filepath.replace('\\', '//')) #NOTE remove replace
 
             if texture_name not in texture_names_udim and texture_name not in texture_names:
                 missing_textures.append(texture_name)

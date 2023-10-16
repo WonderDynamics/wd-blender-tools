@@ -425,9 +425,10 @@ class ExportData:
 
         # Ignore images
         ignore_images = ['Render Result', 'Viewer Node']
-        for node in bpy.context.scene.world.node_tree.nodes:
-            if node.type == 'TEX_ENVIRONMENT' and node.image:
-                ignore_images.append(node.image.name)
+        if bpy.context.scene.world and bpy.context.scene.world.node_tree:
+            for node in bpy.context.scene.world.node_tree.nodes:
+                if node.type == 'TEX_ENVIRONMENT' and node.image:
+                    ignore_images.append(node.image.name)
 
         # Get texture file paths
         texture_paths = list()
@@ -440,6 +441,8 @@ class ExportData:
                 new_paths = self.get_udim_tiles_paths(image)
             if image.source == 'SEQUENCE':
                 new_paths = self.get_image_sequence_paths(image)
+            if image.source == 'GENERATED':
+                continue
             # NOTE: Video files are not currently supported.
             # if image.source == 'MOVIE':
             #     new_paths = self.get_movie_path(image)
