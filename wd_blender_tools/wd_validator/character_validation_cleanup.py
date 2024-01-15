@@ -55,8 +55,8 @@ class ValidatorCleanup:
         bone_rotation_mode_object = ValidatorCleanupBoneRotationMode(metadata)
         report_dict[bone_rotation_mode_object.key] = bone_rotation_mode_object()
 
-        transforms_object = ValidatorCleanupTransforms()
-        report_dict[transforms_object.key] = transforms_object()
+        # transforms_object = ValidatorCleanupTransforms()
+        # report_dict[transforms_object.key] = transforms_object()
 
         auto_smooth_object = ValidatorCleanupAutoSmooth()
         report_dict[auto_smooth_object.key] = auto_smooth_object()

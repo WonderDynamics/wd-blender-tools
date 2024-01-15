@@ -370,8 +370,8 @@ def cleanup_character(self, context):  # pylint: disable=unused-argument
         )
     if validation_cleanup_messages.get('bone_rotation_mode_check'):
         ValidatorCleanupBoneRotationMode.cleanup(validator_properties.metadata['body']['armature_name'])
-    if validation_cleanup_messages.get('transforms_check'):
-        ValidatorCleanupTransforms.cleanup()
+    # if validation_cleanup_messages.get('transforms_check'):
+    #     ValidatorCleanupTransforms.cleanup()
     if validation_cleanup_messages.get('auto_smooth_check'):
         ValidatorCleanupAutoSmooth.cleanup()
     if validation_cleanup_messages.get('syntax_check'):
