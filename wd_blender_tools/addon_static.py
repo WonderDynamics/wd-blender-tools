@@ -5,7 +5,7 @@
 
 """Static data for the add-on except for text messages. Those are in lib/text_static"""
 
-blender_addon_version = (1, 0, 0)
+blender_addon_version = (1, 0, 1)
 
 DOCUMENTATION_URL = 'https://help.wonderdynamics.com/character-creation/getting-started'
 
