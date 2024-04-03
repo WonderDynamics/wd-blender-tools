@@ -33,6 +33,8 @@ class ValidatorProperties(PropertyGroup):
     toggle_arms: BoolProperty(name='Arms', default=True)
     toggle_hands: BoolProperty(name='Hands', default=True)
 
+    toggle_usd: BoolProperty(name='Enable USD Support', default=False, description='Required for USD, Maya and Unreal Engine export')
+
     target_arm: StringProperty(
         name='Body Armature with Bones',
         description='Armature which contains bones for body animation',

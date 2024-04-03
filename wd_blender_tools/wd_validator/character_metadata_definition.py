@@ -418,7 +418,9 @@ class CharacterMetadata(TypeValidator):
     """
 
     software: str
+    addon_version: str
     version: str
+    usd: bool
     materials: List[Union[MetadataMaterialSurface, MetadataMaterialFlat, MetadataMaterialHair]]
     eyes_rig: List[MetadataEyeRig]
     body: MetadataBody
@@ -428,6 +430,7 @@ class CharacterMetadata(TypeValidator):
         """Enforces some additional constraints that cannot be defined by type alone,
         and some values that need to be one of a list of valid options.
         software needs to be 'blender' or 'maya'.
+        addon_version needs to be a #.#.# formatted str.
         version needs to be a #.#.# formatted str.
         """
 
@@ -439,3 +442,9 @@ class CharacterMetadata(TypeValidator):
 
         if not match(r'^\d+\.\d+\.\d+$', self.version):
             raise ValueError('Unsupported version format. Expected format X.Y.Z where X, Y, and Z are integer numbers.')
+        
+        if not match(r'^\d+\.\d+\.\d+$', self.addon_version):
+            raise ValueError('Unsupported addon version format. Expected format X.Y.Z where X, Y, and Z are integer numbers.')
+
+        if not isinstance(self.usd, bool):
+            raise ValueError('Unsuported usd flag. Must be of type bool.')

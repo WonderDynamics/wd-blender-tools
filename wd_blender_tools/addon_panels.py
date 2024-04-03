@@ -25,6 +25,7 @@ from .addon_operators import (
 from .addon_static import (
     arm_bones,
     DOCUMENTATION_URL,
+    BLENDER_ADDON_VERSION,
     hand_bones_left,
     hand_bones_right,
     head_bones,
@@ -454,30 +455,30 @@ class Validate(WSCharacterValidator, bpy.types.Panel):
         box_m = self.layout.box()
         box_m.separator()
 
-        split = box_m.split(factor=0.8)
-        split1 = split.split(factor=0.25)
-        row = split1.row()
-        row = split1.row()
+        # Split the box into three segments
+        split = box_m.split(factor=0.2)
+        left_col = split.column() # Left segment
+
+        split = split.split(factor=0.75)
+        middle_col = split.column() # Middle segment
+        middle_col.prop(validator_properties, 'toggle_usd')
+        middle_col.separator()
+        row = middle_col.row()
         row.alert = validator_properties.validation_status['alert']
         row.label(text=validator_properties.validation_status['status'])
-        row = split.row()
-        box_m.separator()
+        middle_col.separator()
+
+        right_col = split.column() # Right segment
 
         if validator_properties.cleanup_required:
-            split = box_m.split(factor=0.8)
-            split1 = split.split(factor=0.25)
-            row = split1.row()
-            row = split1.row()
-            row.operator(CleanupCharacter.bl_idname, text=CleanupCharacter.bl_label)
-            row = split.row()
-            box_m.separator()
+            middle_col.operator(CleanupCharacter.bl_idname, text=CleanupCharacter.bl_label)
+            middle_col.separator()
+            middle_col.separator()
 
-        split = box_m.split(factor=0.8)
-        split1 = split.split(factor=0.25)
-        row = split1.row()
-        row = split1.row()
-        row.operator(ValidateCharacter.bl_idname, text=ValidateCharacter.bl_label)
-        row = split.row()
+        middle_col.operator(ValidateCharacter.bl_idname, text=ValidateCharacter.bl_label)
+
         box_m.separator()
 
-        self.layout.separator()
+        row = self.layout.row()
+        row.alignment = 'CENTER'
+        row.label(text=f'Wonder Dynamics - {".".join(map(str, BLENDER_ADDON_VERSION))}')

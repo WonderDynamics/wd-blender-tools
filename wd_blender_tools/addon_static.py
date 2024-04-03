@@ -5,7 +5,8 @@
 
 """Static data for the add-on except for text messages. Those are in lib/text_static"""
 
-blender_addon_version = (1, 0, 1)
+BLENDER_ADDON_VERSION = (1, 2, 0)
+METADATA_VERSION = (1, 1, 0)
 
 DOCUMENTATION_URL = 'https://help.wonderdynamics.com/character-creation/getting-started'
 
@@ -428,10 +429,10 @@ autoRigPro_bone_names = [
     'c_root_master.x',
     'c_thigh_fk.l',
     'c_thigh_fk.r',
-    'c_spine_02.x',
+    'c_spine_01.x',
     'c_leg_fk.l',
     'c_leg_fk.r',
-    'c_spine_01.x',
+    'c_spine_02.x',
     'c_foot_fk.l',
     'c_foot_fk.r',
     'c_spine_03.x',
