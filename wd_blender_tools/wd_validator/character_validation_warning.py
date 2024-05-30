@@ -24,7 +24,7 @@ class ValidatorWarning:
     Note: classes used by this validator are prefixed with ValidatorWarning_.
     """
 
-    def __call__(self, metadata: dict) -> dict:
+    def __call__(self, metadata: dict, toggle_usd: bool) -> dict:
         report_dict = {}
 
         missing_bones_object = ValidatorWarningMissingBones(metadata)
@@ -45,6 +45,13 @@ class ValidatorWarning:
 
             muted_blendshapes_object = ValidatorWarningMutedBlendshapes(metadata)
             report_dict[muted_blendshapes_object.key] = muted_blendshapes_object()
+        
+        if toggle_usd:
+            usd_shader_nodes_object = ValidatorUSDShaderNodes()
+            report_dict[usd_shader_nodes_object.key] = usd_shader_nodes_object()
+
+            usd_modifiers_object = ValidatorWarningUSDModifiers()
+            report_dict[usd_modifiers_object.key] = usd_modifiers_object()
 
         return report_dict
 
@@ -196,6 +203,9 @@ class ValidatorWarningMissingBlendshapes(Validator):
 
     def get(self) -> list:
         missing_blendshapes = [key for key, item in self.metadata['face']['blendshape_names'].items() if not item]
+        for exception_bs in ['jawClenchL', 'jawClenchR']:
+            if exception_bs in missing_blendshapes:
+                missing_blendshapes.remove(exception_bs)
         return missing_blendshapes
 
     def check(self, missing_blendshapes: list) -> bool:
@@ -266,3 +276,93 @@ class ValidatorWarningMutedBlendshapes(Validator):
             return False
         else:
             return True
+
+
+class ValidatorUSDShaderNodes(Validator):
+    """Validates that only USD supported shader nodes are used.
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.message = 'USD incompatible shader nodes detected!'
+        self.key = 'usd_shader_nodes_check'
+
+    def get(self) -> list:
+        materials = bpy.data.materials
+        whitelisted_nodes = [
+            'BSDF_PRINCIPLED',
+            'TEX_IMAGE',
+            'NORMAL_MAP',
+            'MAPPING',
+            'BSDF_HAIR_PRINCIPLED',
+            'OUTPUT_MATERIAL',
+            'REROUTE',
+            'TEX_COORD',
+        ]
+        material_status = []
+
+        for material in materials:
+            if material.use_nodes:
+                nodes = material.node_tree.nodes
+                unsupported_nodes = [node.name for node in nodes if node.type not in whitelisted_nodes]
+
+                principled_shaders = [node for node in nodes if node.type == 'BSDF_PRINCIPLED']
+                shader = []
+                for principled_shader in principled_shaders:
+                    translucency = principled_shader.inputs[17].default_value
+                    if translucency > 0.0:
+                        shader.append(principled_shader)
+
+                material_dict = {
+                    'material_name': material.name,
+                    'unsupported_nodes': unsupported_nodes,
+                    'translucency': None
+                    if not shader
+                    else f'Translucency set on {len(shader)} BSDF shaders. Replace with alpha opacity.',
+                }
+
+                material_status.append(material_dict)
+
+        return material_status
+
+    def check(self, material_status: list) -> bool:
+        bad_materials = []
+        for mat_status in material_status:
+            if mat_status['unsupported_nodes'] or mat_status['translucency']:
+                bad_materials.append(mat_status['material_name'])
+        
+        if bad_materials:
+            self.expand_message(f'Check materials: {", ".join(bad_materials)}')
+            return False
+        return True
+
+
+class ValidatorWarningUSDModifiers(Validator):
+    """Validates that only Armature modifier is present in geometry."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.message = 'Unsuported modifiers detected! USD has support for only one armature modifier per mesh object.'
+        self.key = 'usd_modifiers_check'
+
+    def get(self) -> list:
+        modifiers_status = []
+
+        mesh_objects = [obj for obj in bpy.data.objects if obj.type == 'MESH']
+        for obj in mesh_objects:
+            modifiers = [modifier.name for modifier in obj.modifiers if modifier.type != 'ARMATURE']
+            modifiers_dict = {'object_name': obj.name, 'breaking_modifiers': modifiers}
+            modifiers_status.append(modifiers_dict)
+        
+        return modifiers_status
+
+    def check(self, modifiers_status: list) -> bool:
+        bad_mesh_objects = []
+        for mod_status in modifiers_status:
+            if mod_status['breaking_modifiers']:
+                bad_mesh_objects.append(mod_status['object_name'])
+        
+        if bad_mesh_objects:
+            self.expand_message(f'Check objects: {", ".join(bad_mesh_objects)}')
+            return False
+        return True

@@ -29,7 +29,7 @@ class ValidatorRequirement:
     Note: classes used by this validator are prefixed with ValidatorRequirement_.
     """
 
-    def __call__(self, metadata: dict, textures_path: str) -> dict:
+    def __call__(self, metadata: dict, textures_path: str, toggle_usd: bool) -> dict:
         report_dict = {}
 
         main_pose_armature_name_object = ValidatorRequirementMainPoseArmatureName(metadata)
@@ -59,6 +59,13 @@ class ValidatorRequirement:
 
             one_face_mesh_object = ValidatorRequirementOneFaceMesh()
             report_dict[one_face_mesh_object.key] = one_face_mesh_object()
+        
+        if toggle_usd:
+            usd_one_root_bone = ValidatorRequirementUSDOneRootBone(metadata)
+            report_dict[usd_one_root_bone.key] = usd_one_root_bone()
+
+            direct_parenting_object = ValidatorRequirementUSDDirectParenting()
+            report_dict[direct_parenting_object.key] = direct_parenting_object()
 
         return report_dict
 
@@ -219,7 +226,7 @@ class ValidatorRequirementTextureFilesExist(Validator):
             ]
 
         texture_names = [os.path.basename(texture_path) for texture_path in texture_paths]
-        texture_names_udim = [re.sub(r'\d{4}', '<UDIM>', texture_name) for texture_name in texture_names]
+        texture_names_udim = [re.sub(r'(\d{4})(?!.*\d{4})', '<UDIM>', texture_name) for texture_name in texture_names]
         ignore_images = ['Render Result', 'Viewer Node']
         supported_image_types = ['IMAGE', 'MULTILAYER']
 
@@ -292,7 +299,6 @@ class ValidatorRequirementBlendshapes(Validator):
         return blendshapes
 
     def check(self, blendshapes: list) -> bool:
-        print(blendshapes)
         if blendshapes:
             return True
         else:
@@ -322,3 +328,56 @@ class ValidatorRequirementOneFaceMesh(Validator):
             return False
         else:
             return True
+
+
+class ValidatorRequirementUSDOneRootBone(Validator):
+    """Validates that there is only one root bone in the armature."""
+
+    def __init__(self, metadata) -> None:
+        super().__init__()
+        self.message = 'Multiple root bones! Armature can have only one root bone!'
+        self.key = 'one_root_bone_check'
+
+        self.main_armature = bpy.data.objects.get(metadata['body']['armature_name'])
+
+    def get(self) -> int:
+        num_root_bones = 0
+
+        bones = self.main_armature.data.bones
+        for bone in bones:
+            if not bone.parent:
+                num_root_bones += 1
+
+        return num_root_bones
+
+    def check(self, num_root_bones: int) -> bool:
+        if num_root_bones > 1:
+            return False
+        return True
+
+
+class ValidatorRequirementUSDDirectParenting(Validator):
+    """Validates that there is no objects directly parented to bones."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.message = 'Objects parented directly to bones! Bones can deform objects using vertex group weights only.'
+        self.key = 'direct_parenting_check'
+
+    def get(self) -> list:
+        directly_parented_objects = []
+
+        for obj in bpy.data.objects:
+            if obj.parent:
+                if not obj.parent_type == 'OBJECT':
+                    directly_parented_objects.append(obj.name)
+
+        return directly_parented_objects
+
+    def check(self, directly_parented_objects: list) -> bool:
+        if directly_parented_objects:
+            self.expand_message(
+                f'Directly parented objects: {", ".join(directly_parented_objects)}.',
+            )
+            return False
+        return True

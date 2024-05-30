@@ -29,7 +29,7 @@ class ValidatorCleanup:
     Note: classes used by this validator are prefixed with ValidatorCleanup_.
     """
 
-    def __call__(self, metadata: dict) -> dict:
+    def __call__(self, metadata: dict, toggle_usd: bool) -> dict:
         """Do the metadata validation.
         Args:
             metadata (dict): the metadata dictionary to inspect.
@@ -55,8 +55,8 @@ class ValidatorCleanup:
         bone_rotation_mode_object = ValidatorCleanupBoneRotationMode(metadata)
         report_dict[bone_rotation_mode_object.key] = bone_rotation_mode_object()
 
-        transforms_object = ValidatorCleanupTransforms()
-        report_dict[transforms_object.key] = transforms_object()
+        # transforms_object = ValidatorCleanupTransforms()
+        # report_dict[transforms_object.key] = transforms_object()
 
         auto_smooth_object = ValidatorCleanupAutoSmooth()
         report_dict[auto_smooth_object.key] = auto_smooth_object()
@@ -66,6 +66,16 @@ class ValidatorCleanup:
 
         curves_geo_nodes_object = ValidatorCleanupCurvesGeoNodes()
         report_dict[curves_geo_nodes_object.key] = curves_geo_nodes_object()
+
+        multiple_scenes_object = ValidatorCleanupMultipleScenes()
+        report_dict[multiple_scenes_object.key] = multiple_scenes_object()
+
+        collection_naming_object = ValidatorCleanupCollectionNaming()
+        report_dict[collection_naming_object.key] = collection_naming_object()
+
+        if toggle_usd:
+            usd_bone_naming = ValidatorCleanupUSDBoneNaming(metadata)
+            report_dict[usd_bone_naming.key] = usd_bone_naming()
 
         return report_dict
 
@@ -424,3 +434,110 @@ class ValidatorCleanupCurvesGeoNodes(Validator):
                     bpy.ops.object.modifier_apply(modifier=mod.name)
                 except Exception:  # pylint: disable=broad-exception-caught
                     bpy.ops.object.modifier_remove(modifier=mod.name)
+
+
+class ValidatorCleanupUSDBoneNaming(Validator):
+    """Validates that bone names do not contain special characters for USD compatibility.
+    """
+
+    def __init__(self, metadata) -> None:
+        super().__init__()
+        self.message = 'USD incompatible bone naming! Unsupported characters will be replaced by an underscore (_). Supported characters: _ A-Z a-z 0-9'
+        self.key = 'usd_bone_naming_check'
+
+        self.main_armature = bpy.data.objects.get(metadata['body']['armature_name'])
+
+    def get(self) -> list:
+        bone_names = []
+        for bone in self.main_armature.data.bones:
+            bone_names.append(bone.name)
+        return bone_names
+
+    def check(self, bone_names: list) -> bool:
+        supported_chars_pattern = re.compile(r'^[_A-Za-z][_A-Za-z0-9]*$')
+        for bone_name in bone_names:
+            if not supported_chars_pattern.match(bone_name):
+                return False
+        return True
+
+    @staticmethod
+    def cleanup(armature_name: str, context) -> None:
+        """Clean up method renames all bones."""
+        supported_chars_pattern = re.compile(r'^[_A-Za-z][_A-Za-z0-9]*$')
+        armature = bpy.data.objects.get(armature_name)
+
+        current_bone_name_mapping = [bn.bone_name for bn in context.scene.bone_selector_collection]
+
+        for bone in armature.data.bones:
+            if not supported_chars_pattern.match(bone.name):
+                ind = None
+                new_name = re.sub(r'[^_A-Za-z0-9]', '_', bone.name)
+
+                if bone.name in current_bone_name_mapping:
+                    ind = current_bone_name_mapping.index(bone.name)
+
+                bone.name = new_name
+                if ind is not None:
+                    context.scene.bone_selector_collection[ind].bone_name = new_name
+
+
+class ValidatorCleanupMultipleScenes(Validator):
+    """Check if the file has more than one scene and remove them."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.message = 'Multiple scenes detected. All scenes, except the current active scene, will be removed.'
+        self.key = 'multiple_scenes_check'
+
+    def get(self) -> list:
+        scenes = []
+        for scene in bpy.data.scenes:
+            scenes.append(scene)
+        return scenes
+
+    def check(self, scenes: list) -> bool:
+        if len(scenes) > 1:
+            return False
+        return True
+
+    @staticmethod
+    def cleanup() -> None:
+        """Remove all scenes except the active scene."""
+        current_scene = bpy.context.scene
+        for scene in bpy.data.scenes:
+            if scene != current_scene:
+                bpy.data.scenes.remove(scene)
+        
+
+class ValidatorCleanupCollectionNaming(Validator):
+    """Check if any collection is using WS naming."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.message = 'Collections detected with Wonder Studio project naming structure.'
+        self.key = 'collection_naming_check'
+
+        self.blacklisted_collection_names = ['cuts', 'cut', 'objects']
+        self.prefix = 'ws_'
+
+    def get(self) -> list:
+        collection_names = []
+        for collection in bpy.data.collections:
+            if collection.name.startswith(tuple(self.blacklisted_collection_names)):
+                collection_names.append(collection.name)
+        return collection_names
+
+    def check(self, collection_names: list) -> bool:
+        if collection_names:
+            self.expand_message(f'Collections will be renamed: {", ".join(collection_names)}')
+            return False
+        return True
+
+    @staticmethod
+    def cleanup() -> None:
+        """Rename all collections with WS naming."""
+        blacklisted_collection_names = ['cuts', 'cut', 'objects']
+        prefix = 'ws_'
+        for collection in bpy.data.collections:
+            if collection.name.startswith(tuple(blacklisted_collection_names)):
+                collection.name = f'{prefix}{collection.name}'

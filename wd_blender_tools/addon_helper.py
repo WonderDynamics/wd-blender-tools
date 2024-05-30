@@ -18,7 +18,8 @@ import re
 from .addon_static import (
     all_supported_bone_names,
     all_supported_shapekey_names,
-    blender_addon_version,
+    BLENDER_ADDON_VERSION,
+    METADATA_VERSION,
     standard_bone_names,
     EXPORT_FOLDER_NAME,
 )
@@ -30,10 +31,13 @@ from .wd_validator.character_validation_cleanup import (
     ValidatorCleanupAutoSmooth,
     ValidatorCleanupBoneRotationMode,
     ValidatorCleanupCurvesGeoNodes,
+    ValidatorCleanupUSDBoneNaming,
     ValidatorCleanupHipsBoneRelations,
     ValidatorCleanupObjectNaming,
     ValidatorCleanupTextFiles,
     ValidatorCleanupTransforms,
+    ValidatorCleanupMultipleScenes,
+    ValidatorCleanupCollectionNaming,
 )
 
 
@@ -62,16 +66,18 @@ def register_bone_selector_collection():
             param.name = bone_name
 
 
-def write_addon_version(metadata):
+def write_addon_version(metadata, toggle_usd):
     """Updates metadata with current add-on version as a string.
     Version is taken form static data.
     Args:
         metadata (dict): the metadata dictionary defined in ValidatorProperties
     """
-    metadata['version'] = addon_version_tuple_to_str(blender_addon_version)
+    metadata['addon_version'] = version_tuple_to_str(BLENDER_ADDON_VERSION)
+    metadata['version'] = version_tuple_to_str(METADATA_VERSION)
+    metadata['usd'] = toggle_usd
 
 
-def addon_version_tuple_to_str(version: tuple):
+def version_tuple_to_str(version: tuple):
     """Converts a semantic version tuple to a dotted string representation
     Args:
         version (tuple): the version number, for example (1, 2, 3))
@@ -305,7 +311,7 @@ def validate_character(self, context):  # pylint: disable=unused-argument
 
     validator_metadata_object = ValidatorMetadata()
     validation_metadata_message = validator_metadata_object(
-        validator_properties.metadata, addon_version_tuple_to_str(blender_addon_version)
+        validator_properties.metadata, version_tuple_to_str(METADATA_VERSION)
     )
     for key, value in validation_metadata_message.items():
         validator_properties.validation_metadata_message[key] = value
@@ -313,7 +319,7 @@ def validate_character(self, context):  # pylint: disable=unused-argument
         return 'metadata'
 
     validator_cleanup_object = ValidatorCleanup()
-    validation_cleanup_messages = validator_cleanup_object(validator_properties.metadata)
+    validation_cleanup_messages = validator_cleanup_object(validator_properties.metadata, validator_properties.toggle_usd)
     for key, value in validation_cleanup_messages.items():
         validator_properties.validation_cleanup_messages[key] = value
     if any(not item['check'] for item in validation_cleanup_messages.values()):
@@ -321,7 +327,7 @@ def validate_character(self, context):  # pylint: disable=unused-argument
         return 'cleanup'
 
     validator_requirement_object = ValidatorRequirement()
-    validation_fail_messages = validator_requirement_object(validator_properties.metadata, bpy.path.abspath('//'))
+    validation_fail_messages = validator_requirement_object(validator_properties.metadata, bpy.path.abspath('//'), validator_properties.toggle_usd)
     for key, value in validation_fail_messages.items():
         validator_properties.validation_fail_messages[key] = value
     blender_specific_messages(validator_properties.validation_fail_messages)
@@ -329,7 +335,7 @@ def validate_character(self, context):  # pylint: disable=unused-argument
         return 'fail'
 
     validator_warning_object = ValidatorWarning()
-    validation_warning_messages = validator_warning_object(validator_properties.metadata)
+    validation_warning_messages = validator_warning_object(validator_properties.metadata, validator_properties.toggle_usd)
     for key, value in validation_warning_messages.items():
         validator_properties.validation_warning_messages[key] = value
     if any(not item['check'] for item in validation_warning_messages.values()):
@@ -370,14 +376,21 @@ def cleanup_character(self, context):  # pylint: disable=unused-argument
         )
     if validation_cleanup_messages.get('bone_rotation_mode_check'):
         ValidatorCleanupBoneRotationMode.cleanup(validator_properties.metadata['body']['armature_name'])
-    if validation_cleanup_messages.get('transforms_check'):
-        ValidatorCleanupTransforms.cleanup()
+    # if validation_cleanup_messages.get('transforms_check'):
+    #     ValidatorCleanupTransforms.cleanup()
     if validation_cleanup_messages.get('auto_smooth_check'):
         ValidatorCleanupAutoSmooth.cleanup()
     if validation_cleanup_messages.get('syntax_check'):
         ValidatorCleanupObjectNaming.cleanup()
     if validation_cleanup_messages.get('curves_geo_nodes_check'):
         ValidatorCleanupCurvesGeoNodes.cleanup()
+    if validation_cleanup_messages.get('multiple_scenes_check'):
+        ValidatorCleanupMultipleScenes.cleanup()
+    if validation_cleanup_messages.get('collection_naming_check'):
+        ValidatorCleanupCollectionNaming.cleanup()
+    if validation_cleanup_messages.get('usd_bone_naming_check'):
+        ValidatorCleanupUSDBoneNaming.cleanup(validator_properties.metadata['body']['armature_name'], context)
+
 
     save_file()
 
