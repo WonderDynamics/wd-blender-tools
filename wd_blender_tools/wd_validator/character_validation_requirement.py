@@ -90,7 +90,7 @@ class ValidatorRequirementMainPoseArmatureName(Validator):
 
 
 class ValidatorRequirementOneBodyArmature(Validator):
-    """Validates that only one armature ends with the _BODY suffix."""
+    """Validates that only one armature ends with the BODY suffix."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -100,7 +100,7 @@ class ValidatorRequirementOneBodyArmature(Validator):
 
     def get(self) -> list:
         armature_object_names = [
-            obj.name for obj in bpy.data.objects if obj.type == 'ARMATURE' and obj.name.endswith(self.tag)
+            obj.name for obj in bpy.data.objects if obj.type == 'ARMATURE' and self.tag in obj.name
         ]
         return armature_object_names
 
