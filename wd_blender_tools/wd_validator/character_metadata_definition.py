@@ -334,8 +334,6 @@ class MetadataFaceBlendshapes(TypeValidator):
     eyeWidenLowerR: Optional[str]
     eyeWidenUpperL: Optional[str]
     eyeWidenUpperR: Optional[str]
-    jawClenchL: Optional[str]
-    jawClenchR: Optional[str]
     jawIn: Optional[str]
     jawL: Optional[str]
     jawOpen: Optional[str]

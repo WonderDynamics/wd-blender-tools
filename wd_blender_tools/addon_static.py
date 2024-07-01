@@ -5,8 +5,8 @@
 
 """Static data for the add-on except for text messages. Those are in lib/text_static"""
 
-BLENDER_ADDON_VERSION = (1, 2, 1)
-METADATA_VERSION = (1, 1, 0)
+BLENDER_ADDON_VERSION = (1, 2, 2)
+METADATA_VERSION = (1, 1, 1)
 
 DOCUMENTATION_URL = 'https://help.wonderdynamics.com/character-creation/getting-started'
 
@@ -523,8 +523,6 @@ standard_shapekey_names = [
     'eyeWidenLowerR',
     'eyeWidenUpperL',
     'eyeWidenUpperR',
-    'jawClenchL',
-    'jawClenchR',
     'jawIn',
     'jawL',
     'jawOpen',

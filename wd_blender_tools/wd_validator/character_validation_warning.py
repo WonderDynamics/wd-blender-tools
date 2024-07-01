@@ -203,9 +203,6 @@ class ValidatorWarningMissingBlendshapes(Validator):
 
     def get(self) -> list:
         missing_blendshapes = [key for key, item in self.metadata['face']['blendshape_names'].items() if not item]
-        for exception_bs in ['jawClenchL', 'jawClenchR']:
-            if exception_bs in missing_blendshapes:
-                missing_blendshapes.remove(exception_bs)
         return missing_blendshapes
 
     def check(self, missing_blendshapes: list) -> bool:

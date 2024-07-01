@@ -1,7 +1,7 @@
 bl_info = {
     'name': 'Wonder Studio Character Validation',
     'author': 'Wonder Dynamics',
-    'version': (1, 2, 1),
+    'version': (1, 2, 2),
     'blender': (3, 6, 2),
     'location': 'View3D > Panel',
     'description': 'Validate characters for Wonder Studio.',
