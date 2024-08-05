@@ -162,8 +162,6 @@ class ValidatorProperties(PropertyGroup):
                 'eyeWidenLowerR': None,
                 'eyeWidenUpperL': None,
                 'eyeWidenUpperR': None,
-                'jawClenchL': None,
-                'jawClenchR': None,
                 'jawIn': None,
                 'jawL': None,
                 'jawOpen': None,
