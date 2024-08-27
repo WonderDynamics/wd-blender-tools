@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://wonderdynamics.com/wp-content/themes/wonder-dynamics-theme-0ykEzQ/assets/images/logo.svg?v1.0" alt="logo" width="30%"/>
+  <img src="https://wonderdynamics.com/wp-content/themes/wonder-dynamics-theme-F9s3Mt/assets/images/logo.png" alt="logo" width="30%"/>
 </p>
 
 <h1 align="center">
