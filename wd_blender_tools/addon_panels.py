@@ -1,4 +1,4 @@
-# Copyright 2023 Wonder Dynamics
+# Copyright 2025 Wonder Dynamics (an Autodesk Company)
 
 # This source code is licensed under the GNU GPLv3
 # found in the LICENSE file in the root directory of this source tree.
@@ -68,7 +68,7 @@ class WSCharacterValidator:
     """Base class for all add-on panels. Defines the space type and the region type."""
 
     bl_idname = 'OBJECT_PT_WSCharVal'
-    bl_category = 'Wonder Studio Character Validator'
+    bl_category = 'Flow Studio Character Validator'
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
 
@@ -481,4 +481,4 @@ class Validate(WSCharacterValidator, bpy.types.Panel):
 
         row = self.layout.row()
         row.alignment = 'CENTER'
-        row.label(text=f'Wonder Dynamics - {".".join(map(str, BLENDER_ADDON_VERSION))}')
+        row.label(text=f'Wonder Dynamics (an Autodesk Company) - {".".join(map(str, BLENDER_ADDON_VERSION))}')

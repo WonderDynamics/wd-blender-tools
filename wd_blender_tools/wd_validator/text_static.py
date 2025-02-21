@@ -1,4 +1,4 @@
-# Copyright 2023 Wonder Dynamics
+# Copyright 2025 Wonder Dynamics (an Autodesk Company)
 
 # This source code is licensed under the GNU GPLv3
 # found in the LICENSE file in the root directory of this source tree.
@@ -14,14 +14,14 @@ supported_naming_conventions = [bn_n.split('_')[0].replace('-', ' ') for bn_n in
 TEXT_SEPARATOR = '\n'
 
 # Panels messages
-INTRO_STR = f'''Validate your characters for the Wonder Studio platform.
+INTRO_STR = f'''Validate your characters for the Flow Studio platform.
 Generate the metadata.json file after the successful validation and submit it with your character.
 Auto-map bones if your character uses one of the supported bone naming conventions.
 Easily cleanup the scene and your character with a built-in automatic cleanup function.
 After a successful Validation step, the {EXPORT_FOLDER_NAME} folder will be created containing all character files and the generated metadata.json file.'''
 INTRO_STR_EXTENDED = (
     '''This addon will help you validate that your character '''
-    '''is compatible with the Wonder Studio platform.
+    '''is compatible with the Flow Studio platform.
 After a successful validation metadata.json file will be generated.
 You will have to provide this metadata.json file along with the blender file and texture files.
 To get started, this Blender file needs to be saved on your local drive.

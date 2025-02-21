@@ -1,9 +1,9 @@
-# Copyright 2023 Wonder Dynamics
+# Copyright 2025 Wonder Dynamics (an Autodesk Company)
 
 # This source code is licensed under the GNU GPLv3
 # found in the LICENSE file in the root directory of this source tree.
 
-"""Wonder Dynamics Character Validation Add-on register functions."""
+"""Flow Studio Character Validation Add-on register functions."""
 
 import bpy
 from bpy.props import PointerProperty

@@ -1,4 +1,4 @@
-# Copyright 2023 Wonder Dynamics
+# Copyright 2025 Wonder Dynamics (an Autodesk Company)
 
 # This source code is licensed under the GNU GPLv3
 # found in the LICENSE file in the root directory of this source tree.
@@ -332,7 +332,7 @@ class ValidateCharacter(bpy.types.Operator):
 
     bl_idname = 'object.validate_character'
     bl_label = 'Validate Character'
-    bl_description = 'Check if the character is compatible with the Wonder Studio platform'
+    bl_description = 'Check if the character is compatible with the Flow Studio platform'
     bl_options = {'REGISTER', 'UNDO'}
 
     def pre_check_pose_armature(self, target_arm) -> bool:

@@ -1,4 +1,4 @@
-# Copyright 2023 Wonder Dynamics
+# Copyright 2025 Wonder Dynamics (an Autodesk Company)
 
 # This source code is licensed under the GNU GPLv3
 # found in the LICENSE file in the root directory of this source tree.
@@ -396,7 +396,7 @@ def cleanup_character(self, context):  # pylint: disable=unused-argument
 
 
 class ExportData:
-    '''Export and prepare Blender data for upload to Wonder Studio.'''
+    '''Export and prepare Blender data for upload to Flow Studio.'''
 
     def __init__(self, metadata) -> None:
         file_path = Path(bpy.data.filepath)

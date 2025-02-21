@@ -13,19 +13,19 @@
 </div>
 
 <p align="center">
-  The Character Validation Add-on is a tool designed to locally check the compatibility of characters with the Wonder Studio platform. This tool not only provides a level of certainty that the character will pass online validation, but also enables quicker iteration when preparing characters for the Wonder Studio platform.
+  The Character Validation Add-on is a tool designed to locally check the compatibility of characters with the Flow Studio platform. This tool not only provides a level of certainty that the character will pass online validation, but also enables quicker iteration when preparing characters for the Flow Studio platform.
 </p>
 
 ## Documentation
-[Getting Started](https://help.wonderdynamics.com/character-creation/getting-started)
+[Getting Started](https://help.wonderdynamics.com/character-creation-getting-started)
 
-[Character Requirements](https://help.wonderdynamics.com/character-creation/getting-started/character-requirements)
+[Character Requirements](https://help.wonderdynamics.com/character-creation-getting-started/character-requirements)
 
-[Character Warnings](https://help.wonderdynamics.com/character-creation/getting-started/character-warnings)
+[Character Warnings](https://help.wonderdynamics.com/character-creation-getting-started/character-warnings)
 
-[Character Setup](https://help.wonderdynamics.com/character-creation/getting-started/character-setup)
+[Character Setup](https://help.wonderdynamics.com/character-creation-getting-started/character-setup)
 
-[Blender Add-on](https://help.wonderdynamics.com/character-creation/blender-add-on)
+[Blender Add-on](https://help.wonderdynamics.com/blender-add-on)
 
 ## Installation
 - Download the addon.
