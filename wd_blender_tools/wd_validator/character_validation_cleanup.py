@@ -1,4 +1,4 @@
-# Copyright 2023 Wonder Dynamics
+# Copyright 2025 Wonder Dynamics (an Autodesk Company)
 
 # This source code is licensed under the GNU GPLv3
 # found in the LICENSE file in the root directory of this source tree.
@@ -514,7 +514,7 @@ class ValidatorCleanupCollectionNaming(Validator):
 
     def __init__(self) -> None:
         super().__init__()
-        self.message = 'Collections detected with Wonder Studio project naming structure.'
+        self.message = 'Collections detected with Flow Studio project naming structure.'
         self.key = 'collection_naming_check'
 
         self.blacklisted_collection_names = ['cuts', 'cut', 'objects']

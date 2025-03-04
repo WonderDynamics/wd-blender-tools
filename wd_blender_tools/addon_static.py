@@ -1,16 +1,16 @@
-# Copyright 2023 Wonder Dynamics
+# Copyright 2025 Wonder Dynamics (an Autodesk Company)
 
 # This source code is licensed under the GNU GPLv3
 # found in the LICENSE file in the root directory of this source tree.
 
 """Static data for the add-on except for text messages. Those are in lib/text_static"""
 
-BLENDER_ADDON_VERSION = (1, 2, 2)
+BLENDER_ADDON_VERSION = (1, 2, 3)
 METADATA_VERSION = (1, 1, 1)
 
-DOCUMENTATION_URL = 'https://help.wonderdynamics.com/character-creation/getting-started'
+DOCUMENTATION_URL = 'https://help.wonderdynamics.com/character-creation-getting-started'
 
-EXPORT_FOLDER_NAME = '01_wonder_studio_character_data'
+EXPORT_FOLDER_NAME = 'flow_studio_character_data'
 
 # Bone naming
 standard_bone_names = [
@@ -482,7 +482,7 @@ autoRigPro_bone_names = [
 
 # All bone naming conventions
 all_supported_bone_names = {
-    'Wonder-Studio,-Mixamo,-Human-IK_bone_names': standard_bone_names,
+    'Flow-Studio,-Mixamo,-Human-IK_bone_names': standard_bone_names,
     'Quick-Rig_bone_names': quickRig_bone_names,
     'Character-Creator-4_bone_names': characterCreator4_bone_names,
     'Daz-3D_bone_names': daz3d_bone_names,
